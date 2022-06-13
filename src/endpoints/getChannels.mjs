@@ -6,9 +6,8 @@ export default async (pool, req, res) => {
   const conn = await pool.getConnection();
   const message = [];
 
-  conn
-    .query(`SELECT * FROM channels`)
-    .then((dbRes) => {
+  try {
+    conn.query(`SELECT * FROM channels`).then((dbRes) => {
       dbRes.forEach((result) => {
         message.push(result);
       });
@@ -16,12 +15,13 @@ export default async (pool, req, res) => {
       res.status(200);
       res.json(message);
       conn.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500);
-      res.send();
-      conn.end();
-      return;
     });
+  } catch (err) {
+    conn.end();
+    console.log(err);
+    res.status(500);
+    res.send();
+    conn.end();
+    return;
+  }
 };

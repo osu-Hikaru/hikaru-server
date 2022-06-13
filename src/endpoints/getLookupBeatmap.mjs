@@ -8,10 +8,10 @@ export default async (pool, req, res) => {
   const conn = await pool.getConnection();
 
   let map = await conn
-    .query(`SELECT * FROM beatmaps WHERE beatmap_id = ? AND checksum = ? LIMIT 1`, [
-      req.query.id,
-      req.query.checksum,
-    ])
+    .query(
+      `SELECT * FROM beatmaps WHERE beatmap_id = ? AND checksum = ? LIMIT 1`,
+      [req.query.id, req.query.checksum]
+    )
     .catch((err) => {
       console.log(err);
       res.status(500);
@@ -94,7 +94,9 @@ export default async (pool, req, res) => {
         },
         nsfw: Boolean(set[0].nsfw),
         play_count: Number(0),
-        preview_url: String(`https://b.ppy.sh/preview/${set[0].beatmapset_id}.mp3`),
+        preview_url: String(
+          `https://b.ppy.sh/preview/${set[0].beatmapset_id}.mp3`
+        ),
         ranked: Number(set[0].ranked),
         ranked_date: await modules.sqlToOsuDate(set[0].ranked_date),
         ratings: [],
@@ -152,6 +154,46 @@ export default async (pool, req, res) => {
         return;
       });
 
+    if (set[0] === undefined) {
+      await conn
+        .query(
+          `REPLACE INTO beatmapsets (nomination_current, nomination_required, artist, artist_unicode, cover_id, creator, beatmapset_id, nsfw, source, status, title, title_unicode, track_id, user_id, video, download_disabled, more_information, bpm, last_updated, ranked, ranked_date, storyboard, submitted_date, tags) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+          [
+            Number(beatmap.data.beatmapset.nominations_summary.current),
+            Number(beatmap.data.beatmapset.nominations_summary.required),
+            String(beatmap.data.beatmapset.artist),
+            String(beatmap.data.beatmapset.artist_unicode),
+            Number(beatmap.data.beatmapset.covers.cover.split("?")[1]),
+            String(beatmap.data.beatmapset.creator),
+            Number(beatmap.data.beatmapset.id),
+            Number(beatmap.data.beatmapset.nsfw),
+            String(beatmap.data.beatmapset.source),
+            String(beatmap.data.beatmapset.status),
+            String(beatmap.data.beatmapset.title),
+            String(beatmap.data.beatmapset.title_unicode),
+            Number(beatmap.data.beatmapset.track_id),
+            Number(3),
+            Number(beatmap.data.beatmapset.video),
+            Number(beatmap.data.beatmapset.availability.download_disabled),
+            String(beatmap.data.beatmapset.availability.more_information),
+            Number(beatmap.data.beatmapset.bpm),
+            new Date(beatmap.data.beatmapset.last_updated),
+            Number(beatmap.data.beatmapset.ranked),
+            new Date(beatmap.data.beatmapset.ranked_date),
+            Number(beatmap.data.beatmapset.storyboard),
+            new Date(beatmap.data.beatmapset.submitted_date),
+            String(beatmap.data.beatmapset.tags),
+          ]
+        )
+        .catch((err) => {
+          console.log(err);
+          res.status(500);
+          res.send();
+          conn.end();
+          return;
+        });
+    }
+
     await conn
       .query(
         `REPLACE INTO beatmaps (accuracy, ar, beatmapset_id, bpm, checksum, is_convert, count_circles, count_sliders, count_spinners, cs, deleted_at, difficulty_rating, drain, hit_length, beatmap_id, is_scoreable, last_updated, max_combo, new_max_combo, mode, mode_int, passcount, playcount, ranked, status, total_length, url, user_id, version) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
@@ -194,46 +236,6 @@ export default async (pool, req, res) => {
         conn.end();
         return;
       });
-
-    if (set[0] === undefined) {
-      await conn
-        .query(
-          `REPLACE INTO beatmapsets (nomination_current, nomination_required, artist, artist_unicode, cover_id, creator, beatmapset_id, nsfw, source, status, title, title_unicode, track_id, user_id, video, download_disabled, more_information, bpm, last_updated, ranked, ranked_date, storyboard, submitted_date, tags) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-          [
-            Number(beatmap.data.beatmapset.nominations_summary.current),
-            Number(beatmap.data.beatmapset.nominations_summary.required),
-            String(beatmap.data.beatmapset.artist),
-            String(beatmap.data.beatmapset.artist_unicode),
-            Number(beatmap.data.beatmapset.covers.cover.split("?")[1]),
-            String(beatmap.data.beatmapset.creator),
-            Number(beatmap.data.beatmapset.id),
-            Number(beatmap.data.beatmapset.nsfw),
-            String(beatmap.data.beatmapset.source),
-            String(beatmap.data.beatmapset.status),
-            String(beatmap.data.beatmapset.title),
-            String(beatmap.data.beatmapset.title_unicode),
-            Number(beatmap.data.beatmapset.track_id),
-            Number(3),
-            Number(beatmap.data.beatmapset.video),
-            Number(beatmap.data.beatmapset.availability.download_disabled),
-            String(beatmap.data.beatmapset.availability.more_information),
-            Number(beatmap.data.beatmapset.bpm),
-            new Date(beatmap.data.beatmapset.last_updated),
-            Number(beatmap.data.beatmapset.ranked),
-            new Date(beatmap.data.beatmapset.ranked_date),
-            Number(beatmap.data.beatmapset.storyboard),
-            new Date(beatmap.data.beatmapset.submitted_date),
-            String(beatmap.data.beatmapset.tags),
-          ]
-        )
-        .catch((err) => {
-          console.log(err);
-          res.status(500);
-          res.send();
-          conn.end();
-          return;
-        });
-    }
 
     conn.end();
     res.status(200);

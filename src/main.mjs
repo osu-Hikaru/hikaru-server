@@ -2,6 +2,8 @@
 // osu!Hikaru, a fully independent osu!Lazer Private Server backend.
 // Copyright (C) 2021 Hikaru Team <copyright@hikaru.pw>
 
+// TODO: Major rewrite of basically every SQL Statement
+
 const runtime = Date.now();
 
 console.log(`Starting Hikaru...`);
@@ -108,12 +110,12 @@ api.post("/token", upload.none(), async (req, res) => {
   modules.oauth(pool, req, res);
 });
 
-api.get("/v2/me", async (req, res) => {
-  modules.getMe(pool, req, res);
-});
-
 api.all("*", async (req, res, next) => {
   modules.allRoutes(pool, req, res, next);
+});
+
+api.get("/v2/me", async (req, res) => {
+  modules.getMe(pool, req, res);
 });
 
 api.get("/v2/users/*/*", async (req, res) => {

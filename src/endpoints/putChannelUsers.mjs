@@ -2,6 +2,8 @@
 // osu!Hikaru, a fully independent osu!Lazer Private Server backend.
 // Copyright (C) 2021 Hikaru Team <copyright@hikaru.pw>
 
+// TODO: Lmao this shit doesnt do join checks
+
 export default async (pool, req, res) => {
   const conn = await pool.getConnection();
   const url = req.originalUrl.split("/");

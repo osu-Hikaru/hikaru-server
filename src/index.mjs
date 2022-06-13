@@ -13,6 +13,7 @@ import checkActiveTokens from "./utilities/checkActiveTokens.mjs";
 import ftpUpload from "./utilities/ftpUpload.mjs";
 import sqlToOsuDate from "./utilities/sqlToOsuDate.mjs";
 import importBeatmap from "./utilities/importBeatmap.mjs";
+import resolveModeByName from "./utilities/resolveModeByName.mjs";
 
 // Endpoints
 
@@ -69,6 +70,7 @@ export {
   ftpUpload as ftpUpload,
   sqlToOsuDate as sqlToOsuDate,
   importBeatmap as importBeatmap,
+  resolveModeByName as resolveModeByName,
   //-------------------------------
   postUsers as postUsers,
   oauth as oauth,

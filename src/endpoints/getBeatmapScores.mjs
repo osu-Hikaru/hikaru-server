@@ -19,8 +19,6 @@ export default async (pool, req, res) => {
     });
 
   try {
-    console.log(args);
-
     let i = 0;
     let response = {
       scores: [],
@@ -34,21 +32,18 @@ export default async (pool, req, res) => {
       case "osu":
       default:
         args.mode_int = 0;
+        break;
     }
-
-    console.log(args.mode_int);
 
     let scores = await conn.query(
       `SELECT * FROM scores_? WHERE (score_id, user_id, beatmap_id) IN (SELECT min(score_id), user_id, beatmap_id FROM scores_? WHERE (user_id, beatmap_id, total_score) IN (select user_id, beatmap_id, max(total_score) AS total_score FROM scores_? WHERE beatmap_id = ? AND passed = 1  GROUP BY user_id, beatmap_id) GROUP BY user_id, beatmap_id) ORDER BY total_score DESC, created_at ASC LIMIT 50`,
       [args.mode_int, args.mode_int, args.mode_int, url[3]] // TODO: Yes I am lazy
     );
 
-    console.log(scores);
-
     scores.forEach(async (score) => {
       let user = await conn.query(
         `SELECT * FROM users WHERE user_id = ? LIMIT 1`,
-        [score.user_id]
+        [Number(score.user_id)]
       );
 
       let mods = [];

@@ -22,7 +22,10 @@ export default async (pool, req, res) => {
     const messageID = Number(message_count[0]["count(*)"]) + 1;
 
     const channel = await conn.query(
-      `SELECT * FROM channels WHERE channel_id = ? LIMIT 1`,
+      `SELECT channels.type, channels.channel_id, groups.identifier, groups.group_id
+       FROM channels
+       LEFT JOIN groups ON groups.group_id = channels.group_id
+       WHERE channel_id = ? LIMIT 1`,
       [Number(url[4])]
     );
 
@@ -33,6 +36,17 @@ export default async (pool, req, res) => {
       case "SYSTEM":
         if (
           user[0].groups.split(",").some((r) => ["dev", "bot"].indexOf(r) >= 0)
+        ) {
+          sendMessage();
+        } else {
+          rejectMessage();
+        }
+        break;
+      case "GROUP":
+        if (
+          user[0].groups
+            .split(",")
+            .some((r) => [channel[0].identifier].indexOf(r) >= 0)
         ) {
           sendMessage();
         } else {
@@ -97,25 +111,22 @@ export default async (pool, req, res) => {
           });
 
           conn
-          .query(
-            `SELECT last_read_id FROM chat_presence WHERE user_id = ? AND channel_id = ?`,
-            [
-              Number(user[0].user_id),
-              Number(url[4]),
-            ]
-          ).then(async lastRead => {
-
-            conn.query(
-              `UPDATE chat_presence SET last_read_id = ? WHERE channel_id = ? AND user_id = ?`,
-              [
-                Number(lastRead[0].last_read_id),
-                Number(user[0].user_id),
-                Number(url[4]),
-              ]
-            );
-            conn.end();
-            return;
-          })
+            .query(
+              `SELECT last_read_id FROM chat_presence WHERE user_id = ? AND channel_id = ?`,
+              [Number(user[0].user_id), Number(url[4])]
+            )
+            .then(async (lastRead) => {
+              conn.query(
+                `UPDATE chat_presence SET last_read_id = ? WHERE channel_id = ? AND user_id = ?`,
+                [
+                  Number(lastRead[0].last_read_id),
+                  Number(user[0].user_id),
+                  Number(url[4]),
+                ]
+              );
+              conn.end();
+              return;
+            });
         });
     }
   } catch (err) {

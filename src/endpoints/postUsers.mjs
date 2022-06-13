@@ -6,60 +6,24 @@ import bcrypt from "bcrypt";
 
 export default async (pool, req, res) => {
   const conn = await pool.getConnection();
+  const saltRounds = 10;
 
-  bcrypt.genSalt(10, (err, salt) => {
-    if (err) {
-      console.log(err);
-      res.status(500);
-      res.send();
-      conn.end();
-      return;
-    }
+  try {
+    const salt = await bcrypt.genSaltSync(saltRounds);
+    const hash = await bcrypt.hashSync(req.body.user.password, salt);
 
-    bcrypt.hash(req.body.user.password, salt, async (err, hash) => {
-      if (err) {
-        console.log(err);
-        res.status(500);
-        res.send();
-        conn.end();
-        return;
-      }
+    const passwordInsert = await conn.query(
+      `INSERT INTO accounts (username, email, password) VALUES (?,?,?)`,
+      [
+        String(req.body.user.username),
+        String(req.body.user.user_email),
+        String(hash),
+      ]
+    );
 
-      await conn
-        .query(
-          `INSERT INTO accounts (username, email, password) VALUES (?,?,?)`,
-          [req.body.user.username, req.body.user.user_email, hash]
-        )
-        .then(async () => {
-          await conn
-            .query(`SELECT * FROM accounts WHERE username = ?`, [
-              req.body.user.username,
-            ])
-            .then(async (apiRes) => {
-              await conn.query(
-                `INSERT INTO users (username, user_id, join_date) VALUES (?, ?, ?)`,
-                [apiRes[0].username, apiRes[0].user_id, new Date()]
-              );
-              res.status(200);
-              res.send();
-              conn.end();
-              return;
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-          res.status(400);
-          res.json({
-            error: "user_already_exists",
-            error_description:
-              "The provided username or email is already in use. Please change it before attempting to register again.",
-            hint: "Username or Email already in use",
-            message:
-              "The provided username or email is already in use. Please change it before attempting to register again.",
-          });
-          conn.end();
-          return;
-        });
-    });
-  });
+    res.status(200);
+    res.send();
+    conn.end();
+    return;
+  } catch (err) {}
 };

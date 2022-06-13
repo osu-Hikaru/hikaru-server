@@ -16,6 +16,7 @@ export default async (pool, req, res) => {
   };
   let type = "performance";
   let mode = "osu";
+  let mode_int = 0;
   let cursor = 0;
 
   try {
@@ -24,9 +25,11 @@ export default async (pool, req, res) => {
     switch (url[3]) {
       case "osu":
         mode = "osu";
+        mode_int = 0;
         break;
       default:
         mode = "";
+        mode_int = null;
         break;
     }
 
@@ -44,7 +47,8 @@ export default async (pool, req, res) => {
     async function handler(type, mode) {
       if (type === "performance" && mode === "osu") {
         const rankings = await conn.query(
-          `SELECT * FROM users ORDER BY pp DESC LIMIT 50 OFFSET 0`
+          `SELECT * FROM users_? ORDER BY pp DESC LIMIT 50 OFFSET 0`,
+          [Number(mode_int)]
         );
 
         const count = await conn.query(`SELECT count(*) FROM users`);
@@ -52,6 +56,8 @@ export default async (pool, req, res) => {
         response.total = Number(count[0]["count(*)"]);
 
         rankings.forEach(async (ranking) => {
+          const user_base = await conn.query(`SELECT * FROM users WHERE user_id = ? LIMIT 1`, [ranking.user_id])
+
           let i = 0;
           for (i; ranking !== rankings[i]; i++) {}
 
@@ -59,48 +65,48 @@ export default async (pool, req, res) => {
             level: {
               current: 0,
               progress: 0,
-            },
+            }, // TODO: Implement Level
             global_rank: Number(i + 1),
             pp: Number(ranking.pp),
-            ranked_score: 0,
-            hit_accuracy: 100,
-            play_count: 0,
+            ranked_score: 0, // TODO: Ranked Score
+            hit_accuracy: 100, // TODO: Hit acc
+            play_count: 0, // TODO: Playcount???
             play_time: Number(ranking.play_time),
             total_score: Number(ranking.total_score),
             total_hits: Number(ranking.total_hits),
-            maximum_combo: 0,
-            replays_watched_by_others: 0,
+            maximum_combo: 0, // TODO: Max Combo
+            replays_watched_by_others: 0, // TODO: Replays
             is_ranked: true,
             grade_counts: {
-              ss: 0,
+              ss: 0, 
               ssh: 0,
               s: 0,
               sh: 0,
               a: 0,
-            },
+            }, // TODO: Grade Total
             user: {
-              avatar_url: String(ranking.avatar_url),
-              country_code: String(ranking.country_code),
-              default_group: "default",
+              avatar_url: String(user_base.avatar_url), // TODO: Custom AV's
+              country_code: String(user_base.country_code), // TODO: Countries
+              default_group: "default", 
               id: Number(ranking.user_id),
-              is_active: Boolean(ranking.is_active),
-              is_bot: Boolean(ranking.is_bot),
-              is_deleted: Boolean(ranking.is_deleted),
-              is_online: Boolean(ranking.is_online),
-              is_supporter: Boolean(ranking.is_supporter),
-              last_visit: await modules.sqlToOsuDate(ranking.last_visit),
+              is_active: Boolean(user_base.is_active),
+              is_bot: Boolean(user_base.is_bot),
+              is_deleted: Boolean(user_base.is_deleted),
+              is_online: Boolean(user_base.is_online),
+              is_supporter: Boolean(user_base.is_supporter),
+              last_visit: await modules.sqlToOsuDate(user_base.last_visit),
               pm_friends_only: Boolean(false),
               profile_colour: null,
-              username: String(ranking.username),
+              username: String(user_base.username),
               country: {
-                code: String(ranking.country_code),
-                name: String(ranking.country_name),
-              },
+                code: String(user_base.country_code),
+                name: String(user_base.country_name),
+              }, // TODO: Country 2
               cover: {
                 custom_url: null,
                 url: "https://a.hikaru.pw/1/default_cv.jpg",
                 id: "4",
-              },
+              }, // TODO: Covers
             },
           });
 
