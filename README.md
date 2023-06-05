@@ -1,4 +1,8 @@
-# Hikaru Server
+# Hikaru Backend Framework
+
+## ATTENTION
+
+This is a rewrite version of the Node Server Backend. For a (somewhat) working version, refer to the Dev/Main branch. 
 
 ## Disclaimer
 
@@ -8,23 +12,23 @@ This is an independent Fan project made for education purposes only. Please chec
 
 ## ToDo
 
-- [x] Accounts
-- - [x] Registration
-- - [x] Sign-In
+- [ ] Accounts
+- - [ ] Registration
+- - [ ] Sign-In
 - - [x] Session Storage
 - [ ] Submissions
-- - [x] Send & Store
-- - [x] Global Leaderboard
+- - [ ] Send & Store
+- - [ ] Global Leaderboard
 - - [ ] Validation
 - [ ] Profiles
-- - [x] Country
-- - [x] Last Seen
-- - [x] Registration Date
-- - [x] Simple Profile Stats
-- - - [x] Online Status
-- - - [x] Total Score
-- - - [x] Total Hits
-- - - [x] Playcount
+- - [ ] Country
+- - [ ] Last Seen
+- - [ ] Registration Date
+- - [ ] Simple Profile Stats
+- - - [ ] Online Status
+- - - [ ] Total Score
+- - - [ ] Total Hits
+- - - [ ] Playcount
 - - [ ] Advanced Profile Stats
 - - - [ ] Ranked Score
 - - - [ ] Ranked PP
@@ -32,8 +36,8 @@ This is an independent Fan project made for education purposes only. Please chec
 - - - [ ] Grades Achieved
 - - - [ ] Rank Graph
 - - - [ ] Plays Graph
-- - - [x] Play Time
-- - - [x] Global Ranking
+- - - [ ] Play Time
+- - - [ ] Global Ranking
 - - - [ ] Country Ranking
 - - - [ ] Top 100
 - - - [ ] Most Played
@@ -52,8 +56,8 @@ This is an independent Fan project made for education purposes only. Please chec
 - - - [ ] Kudosu
 - [ ] Client
 - - [ ] Beatmap Information
-- - - [x] Basic Set Information
-- - - [x] Basic Map Information
+- - - [ ] Basic Set Information
+- - - [ ] Basic Map Information
 - - - [ ] Ratings
 - - - [ ] Comments
 - - - [ ] Points of failure
@@ -71,12 +75,12 @@ This is an independent Fan project made for education purposes only. Please chec
 - - [ ] ?
 - [ ] Chat
 - - [ ] Silences
-- - [x] Public
-- - - [x] Channel List
-- - - [x] Channels Joined
-- - - [x] Channels Parted
-- - - [x] Messages Read
-- - - [x] Messages
+- - [ ] Public
+- - - [ ] Channel List
+- - - [ ] Channels Joined
+- - - [ ] Channels Parted
+- - - [ ] Messages Read
+- - - [ ] Messages
 - - [ ] Private
 - - - [ ] Channel List
 - - - [ ] Channels Joined
@@ -86,7 +90,7 @@ This is an independent Fan project made for education purposes only. Please chec
 - [ ] Web
 - - [ ] Forum
 - - [ ] Listings
-- - - [x] Beatmap Listing
+- - - [ ] Beatmap Listing
 - - - [ ] User Listing
 - - - [ ] Friends Listing
 - - - [ ] Ranking Listing
@@ -102,7 +106,7 @@ This is an independent Fan project made for education purposes only. Please chec
 - [ ] Administrative
 - - [ ] Roles
 - - - [ ] Admin
-- - - [x] Dev
+- - - [ ] Dev
 - - - [ ] BN
 - - - [ ] NAT/QAT
 - - - [ ] Support
@@ -112,12 +116,12 @@ This is an independent Fan project made for education purposes only. Please chec
 - - [ ] Management
 - - - [ ] Account
 - - - [ ] Chat
-- - - - [x] Role Restricted Channels
+- - - - [ ] Role Restricted Channels
 - - - [ ] Forum
 - - - [ ] User Page
 - [ ] Homepage
 - [ ] News Posts
-- - [x] Basic Ingame Posts
+- - [ ] Basic Ingame Posts
 - - [ ] Framework for Website Posts
 
 ## License Notice
@@ -126,4 +130,4 @@ Licensed under GPL v3 - Check Repository Root for full License notice.
 
 osu!Hikaru, a fully independent osu!Lazer Private Server backend.
 
-Copyright (C) 2021 Hikaru Team <copyright@hikaru.pw>
+Copyright (C) 2023 Hikaru Team <copyright@hikaru.pw>
