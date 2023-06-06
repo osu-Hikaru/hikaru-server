@@ -1,10 +1,13 @@
 // Licensed under GPL v3 - Check Repository Root for full License notice.
 // osu!Hikaru, a fully independent osu!Lazer Private Server backend.
-// Copyright (C) 2022 Hikaru Team <copyright@hikaru.pw>
+// Copyright (C) 2023 Hikaru Team <copyright@hikaru.pw>
+
+// TODO: Experimental frontend endpoint
 
 import * as si from "systeminformation";
 
 const database = global.database;
+const logger = global.logger;
 
 export const GET = async (req, res) => {
   try {
@@ -68,11 +71,16 @@ export const GET = async (req, res) => {
       res.send();
     }
   } catch (err) {
-    console.log(err);
     res.status(500);
     res.send();
+
+    logger.error("express", err);
+
+    return;
   }
 };
+
+// TODO: Globalize function
 
 async function checkUserGroups(res, chk) {
   try {

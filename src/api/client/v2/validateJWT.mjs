@@ -1,11 +1,12 @@
 // Licensed under GPL v3 - Check Repository Root for full License notice.
 // osu!Hikaru, a fully independent osu!Lazer Private Server backend.
-// Copyright (C) 2021 Hikaru Team <copyright@hikaru.pw>
+// Copyright (C) 2023 Hikaru Team <copyright@hikaru.pw>
 
 import fs from "node:fs/promises";
 import jwt from "jsonwebtoken";
 
 const database = global.database;
+const logger = global.logger;
 
 export const ALL = async (req, res, next) => {
   try {
@@ -16,7 +17,7 @@ export const ALL = async (req, res, next) => {
         {},
         async (err, decoded) => {
           if (err) {
-            console.log(err);
+            logger.error("express", err);
             res.status(403);
             res.send();
             return;
@@ -37,9 +38,11 @@ export const ALL = async (req, res, next) => {
       );
     }
   } catch (err) {
-    console.log(err);
     res.status(500);
     res.send();
+
+    logger.error("express", err);
+
     return;
   }
 };

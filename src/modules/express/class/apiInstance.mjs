@@ -45,13 +45,29 @@ export default class {
 
     authenticationRoutes(this.#instance);
 
-      // Beatmaps
+    // Beatmaps
 
     const beatmapRoutes = await resolver.resolveDict(
       "modules.express.routes.beatmaps"
     );
 
     beatmapRoutes(this.#instance);
+
+    // Beatmapsets
+
+    const beatmapsetsRoutes = await resolver.resolveDict(
+      "modules.express.routes.beatmapsets"
+    );
+
+    beatmapsetsRoutes(this.#instance);
+
+    // Chat
+
+    const chatRoutes = await resolver.resolveDict(
+      "modules.express.routes.chat"
+    );
+
+    chatRoutes(this.#instance);
 
     // Developer
 

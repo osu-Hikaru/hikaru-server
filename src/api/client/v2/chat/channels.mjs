@@ -4,22 +4,23 @@
 
 // TODO: Experimental endpoint
 
+const database = global.database;
 const logger = global.logger;
 
 export const GET = async (req, res) => {
   try {
-    res.status(200);
-    res.json({
-      notification_endpoint: "wss://notify.hikaru.pw",
-      notifications: [],
+    let responseMessage = [];
+
+    const databaseResponse = database.runQuery("SELECT * FRO CHANNELS");
+
+    databaseResponse.forEach((result) => {
+      responseMessage.push(result);
     });
+
+    res.status(200);
+    res.json(responseMessage);
   } catch (err) {
-    res.status(500);
-    res.send();
-
     logger.error("express", err);
-
-    return;
   } finally {
   }
 };

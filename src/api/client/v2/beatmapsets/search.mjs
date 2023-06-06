@@ -4,15 +4,21 @@
 
 // TODO: Experimental endpoint
 
+const lazer = global.lazer;
 const logger = global.logger;
 
 export const GET = async (req, res) => {
+  let reqString = "";
+
+  Object.keys(req.query).forEach((key) => {
+    reqString += key + "=" + req.query[key] + "&";
+  });
+
+  const beatmapListing = await lazer.getBeatmapListing(reqString.slice(0, -1));
+
   try {
     res.status(200);
-    res.json({
-      notification_endpoint: "wss://notify.hikaru.pw",
-      notifications: [],
-    });
+    res.json(beatmapListing.data);
   } catch (err) {
     res.status(500);
     res.send();

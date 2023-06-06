@@ -24,7 +24,6 @@ export default class {
 
   resolveDict = async (search) => {
     logger.debug("resolver", "Got function request " + search);
-    console.log(this.#dictionary[search]);
     return new Promise(async (resolve, reject) => {
       if (this.#dictionary[search] !== undefined) {
         logger.debug(
@@ -57,8 +56,10 @@ export default class {
               resolve(mod);
             }
           });
-        } catch (e) {
-          reject(e);
+        } catch (err) {
+          logger.error("express", err);
+
+          reject(err);
         }
       }
     });

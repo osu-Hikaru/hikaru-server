@@ -9,7 +9,6 @@ export default class {
 
   constructor() {
     this.#instance = winston.createLogger({
-      level: "debug",
       levels: {
         emerg: 0,
         alert: 1,
@@ -26,31 +25,21 @@ export default class {
       transports: [
         new winston.transports.Console({
           format: winston.format.simple(),
+          level: "info",
         }),
         new winston.transports.File({
           filename: "./src/logs/error.log",
           level: "error",
         }),
-        new winston.transports.File({ filename: "./src/logs/combined.log" }),
+        new winston.transports.File({
+          filename: "./src/logs/combined.log",
+          level: "debug",
+        }),
       ],
     });
 
     this.notice("logger", "Hello World!");
   }
-
-  /**
-   * @description Writes a log message.
-   * @param {string} level
-   * @param {string} worker
-   * @param {string} message
-   */
-  log = async (level, worker, message) => {
-    this.#instance.log(level, "[" + worker.toUpperCase() + "] " + message);
-
-    if (level === "emerg") {
-      process.exit(-1);
-    }
-  };
 
   /**
    * @description Writes an error message with severity "FATAL" and exists the process.

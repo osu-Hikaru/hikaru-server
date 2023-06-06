@@ -8,19 +8,19 @@ const resolver = global.resolver;
 export default (expressInstance) => {
   logger.info("express-routes", "Loading Authentication routes...");
 
-  expressInstance.all("/v2/*", async (req, res, next) => {
-    const endpoint = await resolver.resolveDict("api.client.v2.validateJWT");
-    endpoint.ALL(req, res, next);
-  });
-
-  expressInstance.all("/", async (req, res, next) => {
-    const endpoint = await resolver.resolveDict("api.client.oauth");
+  expressInstance.post("/users", async (req, res, next) => {
+    const endpoint = await resolver.resolveDict("api.client.users");
     endpoint.POST(req, res);
   });
 
-  expressInstance.post("/token", async (req, res) => {
+  expressInstance.post("/oauth/token", async (req, res) => {
     const endpoint = await resolver.resolveDict("api.client.oauth.token");
     endpoint.POST(req, res);
+  });
+
+  expressInstance.all("*", async (req, res, next) => {
+    const endpoint = await resolver.resolveDict("api.client.v2.validateJWT");
+    endpoint.ALL(req, res, next);
   });
 
   logger.info("express-routes", "Loaded Authentication routes!");

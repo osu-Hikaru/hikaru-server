@@ -11,7 +11,6 @@ const resolver = global.resolver;
 export default class {
   #lazerAuthorizationToken;
   #lazerTokenExpiry;
-  #lazerTokenCreationDate;
   #lazerAvailable = undefined;
 
   constructor() {
@@ -32,7 +31,7 @@ export default class {
   }
 
   #authorizeLazer() {
-    logger.debug("lazertap", "Authorizing Lazer...");
+    logger.info("lazertap", "Authorizing Lazer...");
 
     const data = new FormData();
 
@@ -56,11 +55,10 @@ export default class {
         data: data,
       })
         .then(async (res) => {
-          logger.debug("lazertap", "Authorization success!");
+          logger.info("lazertap", "Authorization success!");
 
           this.#lazerAuthorizationToken = res.data.access_token;
           this.#lazerTokenExpiry = res.data.expires_in;
-          this.#lazerTokenCreationDate = Date.now();
 
           this.#lazerAvailable = true;
 
@@ -76,8 +74,6 @@ export default class {
             "Authorization failed! Retrying in 10 Seconds..."
           );
 
-          console.log(err);
-
           setTimeout(() => {
             this.#authorizeLazer();
           }, 1000 * 10);
@@ -87,12 +83,41 @@ export default class {
     }
   }
 
-  async getBeatmap(id, checksum) {
+  async getBeatmap(id, filename, checksum) {
     let getBeatmapFunction = await resolver.resolveDict(
       "modules.lazerAPI.routes.getBeatmap"
     );
 
-    return await getBeatmapFunction(this.getLazerAuthToken(), id, checksum);
+    return await getBeatmapFunction(
+      this.getLazerAuthToken(),
+      id,
+      filename,
+      checksum
+    );
+  }
+
+  async getBeatmapset(id) {
+    let getBeatmapsetFunction = await resolver.resolveDict(
+      "modules.lazerAPI.routes.getBeatmapset"
+    );
+
+    return await getBeatmapsetFunction(this.getLazerAuthToken(), id);
+  }
+
+  async getBeatmapsetDownload(id) {
+    let getBeatmapsetDownloadFunction = await resolver.resolveDict(
+      "modules.lazerAPI.routes.getBeatmapsetDownload"
+    );
+
+    return await getBeatmapsetDownloadFunction(this.getLazerAuthToken(), id);
+  }
+
+  async getBeatmapListing(qs) {
+    let getBeatmapFunction = await resolver.resolveDict(
+      "modules.lazerAPI.routes.getBeatmapListing"
+    );
+
+    return await getBeatmapFunction(this.getLazerAuthToken(), qs);
   }
 
   getLazerAuthToken() {

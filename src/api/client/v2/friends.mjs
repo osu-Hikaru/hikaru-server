@@ -9,17 +9,9 @@ const logger = global.logger;
 export const GET = async (req, res) => {
   try {
     res.status(200);
-    res.json({
-      notification_endpoint: "wss://notify.hikaru.pw",
-      notifications: [],
-    });
+    res.send([]);
   } catch (err) {
-    res.status(500);
-    res.send();
-
     logger.error("express", err);
-
-    return;
   } finally {
   }
 };

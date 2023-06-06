@@ -30,13 +30,69 @@ export default class {
     );
   };
 
-  getPool = () => {
-    process.emitWarning(
-      "getPool is simply a function to retain compatibility with old, not yet converted functions. " +
-        "Consider switching to the new query methods, as this will cease to work in the near future.",
-      "DeprecationWarning"
+  generateSQLSelectQuery = (tableName, jsonObj) => {
+    const fields = Object.keys(jsonObj);
+    const values = Object.values(jsonObj).map((value) =>
+      typeof value === "string" &&
+      /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)$/gm.test(value)
+        ? this.formatDate(new Date(value))
+        : value
     );
-    return this.#pool;
+
+    const conditions = fields
+      .map((field, index) => `\`${field}\` = ?`)
+      .join(" AND ");
+    const query = `SELECT * FROM ${tableName} WHERE ${conditions}`;
+
+    return { query, values };
+  };
+
+  generateSQLInsertQuery = (tableName, jsonObj) => {
+    const fields = Object.keys(jsonObj);
+    const values = Object.values(jsonObj).map((value) =>
+      typeof value === "string" &&
+      /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)$/gm.test(value)
+        ? this.formatDate(new Date(value))
+        : value
+    );
+
+    const placeholders = fields.map(() => "?").join(",");
+    const fieldsWithBackticks = fields.map((field) => `\`${field}\``).join(",");
+
+    const query = `INSERT INTO ${tableName} (${fieldsWithBackticks}) VALUES (${placeholders})`;
+
+    return { query, values };
+  };
+
+  generateSQLInsertOrUpdateQuery = (tableName, jsonObj) => {
+    const fields = Object.keys(jsonObj);
+    const values = Object.values(jsonObj).map((value) =>
+      typeof value === "string" &&
+      /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)$/gm.test(value)
+        ? this.formatDate(new Date(value))
+        : value
+    );
+
+    const placeholders = fields.map(() => "?").join(",");
+    const fieldsWithBackticks = fields.map((field) => `\`${field}\``).join(",");
+    const updateStatement = fields
+      .map((field) => `\`${field}\` = VALUES(\`${field}\`)`)
+      .join(", ");
+
+    const query = `INSERT INTO ${tableName} (${fieldsWithBackticks}) VALUES (${placeholders}) ON DUPLICATE KEY UPDATE ${updateStatement}`;
+
+    return { query, values };
+  };
+
+  formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hour = String(date.getHours()).padStart(2, "0");
+    const minute = String(date.getMinutes()).padStart(2, "0");
+    const second = String(date.getSeconds()).padStart(2, "0");
+
+    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
   };
 
   runQuery = async (query, params) => {

@@ -9,9 +9,28 @@ export default (expressInstance) => {
   logger.info("express-routes", "Loading Beatmap routes...");
 
   expressInstance.get("/v2/beatmaps/lookup", async (req, res, next) => {
-    const endpoint = await resolver.resolveDict("api.client.v2.beatmaps.lookup");
+    const endpoint = await resolver.resolveDict(
+      "api.client.v2.beatmaps.lookup"
+    );
     endpoint.GET(req, res);
   });
+
+  expressInstance.post("/v2/beatmaps/*/solo/scores", async (req, res, next) => {
+    const endpoint = await resolver.resolveDict(
+      "api.client.v2.beatmaps.solo.scores"
+    );
+    endpoint.POST(req, res);
+  });
+
+  expressInstance.put(
+    "/v2/beatmaps/*/solo/scores/*",
+    async (req, res, next) => {
+      const endpoint = await resolver.resolveDict(
+        "api.client.v2.beatmaps.solo.scores"
+      );
+      endpoint.PUT(req, res);
+    }
+  );
 
   logger.info("express-routes", "Loaded Beatmap routes!");
 };
